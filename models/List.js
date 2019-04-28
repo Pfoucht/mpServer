@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         title: DataTypes.STRING(250),
         desc: DataTypes.STRING(250),
         favorite: DataTypes.BOOLEAN
-    })
+    });
 
     List.associate = models => {
         List.belongsTo(models.User);
