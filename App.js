@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 const seed = require('./seeding');
 const dotenv = require('dotenv').config({path: __dirname + '/.env'})
@@ -25,6 +25,7 @@ app.get('/', (req, res) => {
 app.use('/lists', listRoutes);
 app.use('/movies', movieRoutes);
 app.use('/favorite', favoriteRoutes);
+app.use('/auth', authRoutes);
 
 
 app.listen(PORT, () => {

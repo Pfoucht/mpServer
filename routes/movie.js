@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Movie = require('../models/Movie');
 
 router.get('/test', (req, res, next) => {
     // JUST TESTING REDUX WITH EXPRESS SERVER
@@ -20,6 +21,8 @@ router.post('/favorite/:id', (req, res, next) => {
 router.post('/seen/:id', (req, res, next) => {
     console.log('running seen movie ' + req.params.id);
 });
+
+
 
 
 module.exports = router;

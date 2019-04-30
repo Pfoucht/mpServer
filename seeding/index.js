@@ -5,6 +5,7 @@ const { List, User } = require('../models');
 // Creates a user, favorites list, and normal lists
 
 module.exports = async () => {
+    try{
     let user = await User.findOrCreate({
         where: {
             username: "Jojo"
@@ -61,4 +62,7 @@ module.exports = async () => {
             UserId: 1,
         }
     })
+}catch(error){
+    console.log('in seeding error');
+}
 }
