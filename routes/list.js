@@ -26,20 +26,21 @@ router.route('/user/:userId')
 
     // create a list 
     .post(async (req, res) => {
-        let { title, desc } = req.body;
-
+        let { title, desc, privacy } = req.body;
         try{
             const user = await User.findByPk(req.params.userId || 1)
             const list = await List.create({
                 UserId: user.dataValues.id, 
                 title,
                 desc,
+                privacy,
                 favorite: false
             });
 
             res.status(201).json({ list });
 
         }catch(error){
+            // console.log(error);
             res.status(400).json({ error: error.message });
         }
     });
@@ -54,7 +55,7 @@ router.route('/:id')
             const list = await List.findByPk(id);
             const movies = await list.getMovies();
 
-            res.status(201).json({ list: list, listMovies: movies });
+            res.status(201).json({ list: list, results: movies });
 
         }catch(error){
             res.status(400).json({ error })
@@ -83,7 +84,7 @@ router.route('/:id')
         const id = req.params.id;
 
         try {
-            const list = await List.destroy({ where: { id }});
+            const list = await List.destroy({ where: { id } });
 
             res.sendStatus(200).json({ list });
 
@@ -93,9 +94,9 @@ router.route('/:id')
     });
 
 
-    router.route('/:listId/movie/:movieId')
+    router.route('/user/:userId/list/:listId')
 
-        // Add movie to list | input: listId, { movie } | output: { movie: {id, listId} }
+        // Add movie to list | input: listId, { movie } | output:  movie: { id, listId } 
         .post(async (req, res) => {
             const id = req.params.listId;
             const reqMovie = req.body.movie;
@@ -103,11 +104,15 @@ router.route('/:id')
             try{
                 const movie = await Movie.findOrCreate({where: { id: reqMovie.id }, defaults: { ...reqMovie }});
                 const list = await List.findByPk(id);
-                const addedMovie = await list.addMovie(movie[0].dataValues.id);
+                if(!list.dataValues.thumbnail){
+                    await list.update({ thumbnail: reqMovie.backdrop_path || reqMovie.poster_path })
+                }
+                await list.addMovie(movie[0].dataValues.id);
 
-                return res.status(201).json({ movie: result[0], success: true})
+                return res.status(201).json({ movie: movie, success: true})
 
             }catch(error){
+                console.log(error.message);
                 return res.json({error: error})
             }
         })
@@ -117,7 +122,7 @@ router.route('/:id')
             try{
                 const list = await List.findByPk(req.params.listId);
                 const rowsDeleted = await list.removeMovie(req.params.movieId); 
-                   
+            
                 return res.status(201).json({ rowsDeleted });
 
             }catch(error){

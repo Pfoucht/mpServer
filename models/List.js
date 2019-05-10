@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true
         },
         title: DataTypes.STRING(250),
+        thumbnail: DataTypes.STRING(250),
         desc: DataTypes.STRING(250),
         favorite: DataTypes.BOOLEAN
     });
