@@ -11,6 +11,7 @@ module.exports = {
       },
       title: Sequelize.STRING(250),
       desc: Sequelize.STRING(250),
+      coverPhoto: Sequelize.STRING(250),
       UserId: {
         type: Sequelize.INTEGER,
         references: {

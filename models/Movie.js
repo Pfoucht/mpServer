@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         vote_count: DataTypes.INTEGER,
         video: DataTypes.BOOLEAN,
         vote_average: DataTypes.DECIMAL,
+        name: DataTypes.STRING(250),
         title: DataTypes.STRING(250),
         popularity: DataTypes.DECIMAL,
         poster_path: DataTypes.STRING(250),
