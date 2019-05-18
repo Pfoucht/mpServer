@@ -21,6 +21,8 @@ router.post('/signup', async (req, res, next) => {
 });
 
 router.post('/login', async (req, res, next) => {
+
+    console.log('login');
     let { username, password } = req.body;
 
     try{
