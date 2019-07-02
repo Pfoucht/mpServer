@@ -3,4 +3,5 @@ module.exports = {
   favoriteRoutes: require('./favorite'),
   listRoutes: require('./list'),
   authRoutes: require('./auth'),
+  socialRoutes: require('./social'),
 };

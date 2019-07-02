@@ -33,11 +33,28 @@ module.exports = (sequelize, DataTypes) => {
             type: Sequelize.STRING,
             allowNull: true,
         },
-    })
-    
+    });
+     
     User.associate = models => {
         User.hasMany(models.List);
+        User.belongsToMany(models.User, {as: "Following", foreignKey: "following_id", through: 'Follow'})
+        User.belongsToMany(models.User, {as: "Followers", foreignKey: "follower_id", through: 'Follow'})
     }
 
     return User;
 }
+
+
+// {
+//     instanceMethods: {
+//         follow: function(user){
+//             return ModelSync(this.addFollowing(user))
+//         },
+//         unfollow: function(user){
+//             return ModelSync(this.removeFollowing(user))
+//         },
+//         following: function(user){
+//             return ModelSync(this.hasFollowing(user))
+//         }
+//     }
+// })
