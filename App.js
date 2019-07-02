@@ -15,7 +15,8 @@ const {
   listRoutes,
   movieRoutes,
   authRoutes,
-  favoriteRoutes
+  favoriteRoutes,
+  socialRoutes
 } = require('./routes');
 
 app.get('/', (req, res) => {
@@ -26,6 +27,7 @@ app.use('/lists', listRoutes);
 app.use('/movies', movieRoutes);
 app.use('/favorite', favoriteRoutes);
 app.use('/auth', authRoutes);
+app.use('/social', socialRoutes);
 
 
 app.listen(PORT, () => {
