@@ -7,3 +7,18 @@ Setting up a development server
 - "npm start"
 
 Sequlize docs: http://docs.sequelizejs.com/
+
+
+
+
+TODO:
+
+
+Profile-
+    add field for profile picture
+    change field length of password
+    add isDiscoverable/private field for social purpose 
+
+
+Fix database migrations/clean them up
+Refactor/clean up code

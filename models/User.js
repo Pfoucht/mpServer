@@ -20,11 +20,11 @@ module.exports = (sequelize, DataTypes) => {
               }
         },
         password: {
-            type: Sequelize.STRING(25),
+            type: Sequelize.STRING(75),
             allowNull: false,
             validate: {
                 len: {
-                  args: [3, 25],
+                  args: [3, 75],
                   msg: "Password must be between 3 and 25 characters. Please try again."
                 }
               }
@@ -33,6 +33,10 @@ module.exports = (sequelize, DataTypes) => {
             type: Sequelize.STRING,
             allowNull: true,
         },
+        // isDiscoverable: {
+        //     type: Sequelize.BOOLEAN,
+        //     allowNull: false
+        // }
     });
      
     User.associate = models => {

@@ -16,16 +16,34 @@ router.route('/user/:userId')
                     favorite: false
                 }
             });
+            console.log('here');
 
-            res.status(201).json({ lists });
+            let arr = [];
+            for(let i=0; i<lists.length; i++){
+                const movies = await lists[i].getMovies();
+                let movieIdList = [];
+                for(let j=0; j<movies.length; j++){
+                    movieIdList.push(movies[j].id);
+                }
+                arr.push({...lists[i].dataValues, movieIdList});
+            }
+            console.log('gone');
+            console.log(arr);
+
+            res.status(201).json({ lists: arr });
 
         }catch(error){
+            console.log(error);
             res.status(400).json({ error: error.message });
         }
     })
 
     // create a list 
     .post(async (req, res) => {
+        console.log('running 2');
+        console.log('running 2');
+        console.log('running 2');
+        console.log('running 2');
         let { title, desc, privacy } = req.body;
         try{
             const user = await User.findByPk(req.params.userId || 1)
@@ -45,20 +63,35 @@ router.route('/user/:userId')
         }
     });
 
-router.route('/:id')
+router.route('/listId/:id')
 
     // get list by id
     .get(async (req, res) => {
+        console.log('in list id');
         const id = req.params.id;
 
         try{
             const list = await List.findByPk(id);
             const movies = await list.getMovies();
+            let idList = [];
+            movies.map(el => {
+                idList.push(el.id)
+            });
 
-            res.status(201).json({ list: list, results: movies });
+            console.log(idList);        
+
+            const obj = {...list.dataValues};
+            obj['movies'] = movies;
+            obj['movieIdList'] = idList
+            res.status(202).json({ list: obj, results: movies });
 
         }catch(error){
-            res.status(400).json({ error })
+            console.log('__________________________');
+            console.log('here');
+            console.log('__________________________');
+
+            console.log(error);
+            res.status(400).json({ error, hi: 'hello' })
         }
     })
 
@@ -94,6 +127,7 @@ router.route('/:id')
     });
 
 
+    // Add movie to list
     router.route('/user/:userId/list/:listId')
 
         // Add movie to list | input: listId, { movie } | output:  movie: { id, listId } 
@@ -109,7 +143,7 @@ router.route('/:id')
                 }
                 await list.addMovie(movie[0].dataValues.id);
 
-                return res.status(201).json({ movie: movie, success: true})
+                return res.status(201).json({ movie: movie[0], listId: id});
 
             }catch(error){
                 console.log(error.message);

@@ -15,7 +15,7 @@ module.exports = {
         unique: true
       },
       password: {
-        type: Sequelize.STRING(25),
+        type: Sequelize.STRING(75),
         allowNull: false,
       },
       bio: {

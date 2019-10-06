@@ -14,9 +14,21 @@ const Sequelize = require('sequelize');
             console.log(req.params)
             console.log('here');
             const users = await User.findAll({ where: { username: { [Op.iLike]: '%' + req.params.query + '%' } } });
-            res.status(201).json({ users: users });
+            console.log(users.length);
+            let arr = [];
+            for(let i=0; i<users.length; i++){
+                let followers = await users[i].getFollowers();
+                arr.push({
+                    ...users[i].dataValues,
+                    followers
+                });
+            }
+            console.log('finished');
+            console.log(arr);
+            res.status(201).json({ users: arr });
 
         }catch(error){
+            console.log(error);
             console.log('failure');
             res.status(400).json({ error: error.message });
         }
@@ -45,7 +57,7 @@ const Sequelize = require('sequelize');
 
 
 
-router.route('/:username')
+router.route('/profile/:username')
 
 // get all lists
 .get(async (req, res) => {
@@ -58,8 +70,10 @@ router.route('/:username')
             }
         });
         console.log('here success');
-        console.log(user);
-        res.status(201).json({ profile: { username: user.dataValues.username, lists: lists } });
+        const followers = await user.getFollowers()
+        const following = await user.getFollowing();
+        console.log(user.dataValues);
+        res.status(201).json({ profile: { username: user.dataValues.username, lists: lists, userId: user.dataValues.id, followers: followers, following: following } });
 
     }catch(error){
         console.log('failure');
@@ -133,23 +147,111 @@ router.route('/follow/:followerId/:followingId')
 // FOLLOWERID IS THE PERSON WHO IS GOING TO BE FOLLOWED
 //FOLLOWINGID IS THE PERSON WHO IS FOLLOWING THE NEW USER
 .get(async (req, res) => {
+    console.log('dodmdmdmmdmdmdmd');
+    console.log(req.params.followerId);
+    console.log(req.params.followingId);
     try{
-        const user1 = await user.findOne({where: {id: req.params.followerId}})
-        const user2 = await user.findOne({where: {id: req.params.followingId}});
+        const user1 = await User.findOne({where: {id: req.params.followerId}});
+        const user2 = await User.findOne({where: {id: req.params.followingId}});
+        console.log(user1.dataValues.username);
+        console.log(user2.dataValues.username);
     
         
-        let bool = user2.hasFollowing(user1.dataValues.id);
+        let bool = await user2.hasFollowing(user1.dataValues.id);
+        console.log(bool);
         if(bool){
-            user2.removeFollowing(user1.dataValues.id);
+            await user2.removeFollowing(user1.dataValues.id);
         }else{
-            user2.addFollowing(user1.dataValues.id);
+            console.log('hereeee');
+            await user2.addFollowing(user1.dataValues.id);
         }
-    
+
+        // const followers = await user2.getFollowers();
+        const following = await user2.getFollowing();
+        const followers = await user1.getFollowers();
+        console.log('---------');
+        return res.json({ user: { userId: user1.dataValues.id, username: user1.dataValues.username, followers: followers} })
+        
     }catch(error){
         console.log(error);
     }
 
 
+});
+
+router.route('/following/lists/username/:username')
+
+.get(async(req, res) => {
+    console.log(req.params.username);
+    const user = await User.findOne({where: {username: req.params.username}});
+    console.log(user);
+    const following = await user.getFollowing();
+    let arr = [];
+    for(let i=0; i<following.length; i++){
+        let followers = await following[i].getFollowers();
+        arr.push({
+            ...following[i].dataValues,
+            followers
+        })
+    }
+    return res.json({ following: arr }); 
+});
+
+
+router.route('/followers/lists/username/:username')
+
+.get(async(req, res) => {
+    console.log(req.params.username);
+    const user = await User.findOne({where: {username: req.params.username}});
+    const followers = await user.getFollowers();
+    let arr = [];
+    for(let i=0; i<followers.length; i++){
+        let userFollowers = await followers[i].getFollowers();
+        arr.push({
+            ...followers[i].dataValues,
+            followers: userFollowers
+        })
+    }
+    return res.json({ followers: arr }); 
 })
+
+
+// GET FOLLOWERS & FOLLOWING
+
+// router.route('/followers/:userId')
+//     .get(async (req, res) => {
+        
+//     })
+
+
+
+router.route('/following/lists/userId/:userId')
+    
+    .get(async (req, res) => {
+        console.log(req.user);
+        console.log(req.params.userId + ' lololol');
+        try{
+            const user = await User.findOne({where: {id: req.params.userId}});
+            console.log(user);
+            const following = await user.getFollowing();
+            const lists = [];
+            for(let i=0; i<following.length; i++){
+                let userLists = await following[i].getLists();
+                for(let j=0; j<userLists.length; j++){
+                    lists.push(userLists[j]);
+                }
+            }
+            return res.json({
+                user,
+                following,
+                lists
+            })
+        }catch(error){
+            console.log(error);
+        }
+    })
+
+
+
 
 module.exports = router;
